@@ -16,6 +16,11 @@ ALLOWED_ORIGINS = list({*_base_origins, *[f"http://localhost:{p}" for p in _dev_
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Run Alembic migrations on startup if enabled
+    import subprocess
+    if os.getenv("RUN_MIGRATIONS") == "true":
+        subprocess.run(["alembic", "upgrade", "head"], check=True)
+
     # Startup: initialize APScheduler
     from services.scheduler import start_scheduler, stop_scheduler
     start_scheduler()
