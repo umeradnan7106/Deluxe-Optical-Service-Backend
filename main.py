@@ -6,12 +6,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "")
 
-# Parse comma-separated origins and add common dev ports
-_base_origins = [o.strip() for o in FRONTEND_URL.split(",") if o.strip()]
-_dev_ports = [3000, 3001, 3002, 3003, 3004, 3005]
-ALLOWED_ORIGINS = list({*_base_origins, *[f"http://localhost:{p}" for p in _dev_ports]})
+_env_origins = [o.strip() for o in FRONTEND_URL.split(",") if o.strip()]
+_hardcoded_origins = [
+    "https://deluxe-optical-service.vercel.app",
+    "http://localhost:3000",
+]
+_dev_ports = [3001, 3002, 3003, 3004, 3005]
+ALLOWED_ORIGINS = list({
+    *_env_origins,
+    *_hardcoded_origins,
+    *[f"http://localhost:{p}" for p in _dev_ports],
+})
 
 
 @asynccontextmanager
