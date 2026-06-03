@@ -1,3 +1,4 @@
+import json
 from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -16,6 +17,7 @@ class LensOptionCreate(BaseModel):
     sub_type: Optional[str] = None
     price: float
     description: Optional[str] = None
+    sub_options: Optional[str] = None  # JSON string of [{name, price}]
     is_active: bool = True
     sort_order: int = 0
 
@@ -26,6 +28,7 @@ class LensOptionUpdate(BaseModel):
     sub_type: Optional[str] = None
     price: Optional[float] = None
     description: Optional[str] = None
+    sub_options: Optional[str] = None
     is_active: Optional[bool] = None
     sort_order: Optional[int] = None
 
@@ -36,6 +39,12 @@ class ReorderItem(BaseModel):
 
 
 def _serialize(lo: LensOption) -> dict:
+    sub_opts = None
+    if lo.sub_options:
+        try:
+            sub_opts = json.loads(lo.sub_options)
+        except Exception:
+            sub_opts = None
     return {
         "id": lo.id,
         "name": lo.name,
@@ -43,6 +52,7 @@ def _serialize(lo: LensOption) -> dict:
         "sub_type": lo.sub_type,
         "price": lo.price,
         "description": lo.description,
+        "sub_options": sub_opts,
         "is_active": lo.is_active,
         "sort_order": lo.sort_order,
     }

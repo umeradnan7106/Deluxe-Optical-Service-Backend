@@ -66,6 +66,8 @@ from routes.admin.lens_options import router as admin_lens_options_router
 from routes.admin.lens_collection import router as admin_lens_collection_router
 from routes.lens_collection import router as lens_collection_router
 from routes.faqs import router as faqs_router
+from routes.admin.abandoned_carts import router as admin_abandoned_carts_router
+from routes.admin.users import router as admin_users_router
 
 app.include_router(auth_router, prefix="/api")
 app.include_router(products_router, prefix="/api")
@@ -87,3 +89,5 @@ app.include_router(admin_lens_options_router, prefix="/api")
 app.include_router(admin_lens_collection_router, prefix="/api")
 app.include_router(lens_collection_router, prefix="/api")
 app.include_router(faqs_router, prefix="/api")
+app.include_router(admin_abandoned_carts_router, prefix="/api")
+app.include_router(admin_users_router, prefix="/api")

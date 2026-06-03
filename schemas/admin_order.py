@@ -51,3 +51,29 @@ class OrderStatusUpdate(BaseModel):
 
 class OrderTrackingUpdate(BaseModel):
     tracking_number: str
+
+
+class DraftOrderItem(BaseModel):
+    product_name: str
+    color_name: str
+    sku_variant: Optional[str] = None
+    quantity: int
+    frame_price: float
+    lens_options_price: float = 0.0
+    lens_option_names: list[str] = []
+
+
+class DraftOrderCreate(BaseModel):
+    customer_name: str
+    customer_phone: str
+    customer_email: Optional[str] = None
+    shipping_address: str
+    city: str
+    province: str
+    notes: Optional[str] = None
+    items: list[DraftOrderItem]
+    payment_method: str
+    subtotal: float
+    shipping_fee: float = 0.0
+    payment_discount: float = 0.0
+    total: float

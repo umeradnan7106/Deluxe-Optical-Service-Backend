@@ -19,6 +19,7 @@ class LensOption(Base):
     sub_type = Column(String(50), nullable=True)
     price = Column(Float, nullable=False)
     description = Column(Text, nullable=True)
+    sub_options = Column(Text, nullable=True)  # JSON: [{name, price}]
     is_active = Column(Boolean, default=True)
     sort_order = Column(Integer, default=0)
 

@@ -6,9 +6,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from database import get_db
-from models.order import Order, OrderStatusEnum
+from models.order import Order, OrderStatusEnum, PaymentStatusEnum, PaymentMethodEnum
 from utils.auth import get_current_admin
-from schemas.admin_order import AdminOrderListItem, AdminOrderDetail, OrderStatusUpdate, OrderTrackingUpdate
+from schemas.admin_order import AdminOrderListItem, AdminOrderDetail, OrderStatusUpdate, OrderTrackingUpdate, DraftOrderCreate
 
 router = APIRouter(prefix="/admin/orders", tags=["admin-orders"])
 
@@ -21,6 +21,49 @@ VALID_TRANSITIONS: dict[str, list[str]] = {
     "cancelled": [],
     "refunded": [],
 }
+
+
+@router.post("/draft")
+def create_draft_order(body: DraftOrderCreate, db: Session = Depends(get_db), _=Depends(get_current_admin)):
+    import random
+    import string
+
+    def gen_number():
+        return "DO-" + "".join(random.choices(string.digits, k=6))
+
+    order_number = gen_number()
+    while db.query(Order).filter(Order.order_number == order_number).first():
+        order_number = gen_number()
+
+    try:
+        pm = PaymentMethodEnum(body.payment_method)
+    except ValueError:
+        pm = PaymentMethodEnum.cod
+
+    items_json = json.dumps([item.model_dump() for item in body.items])
+    order = Order(
+        order_number=order_number,
+        customer_name=body.customer_name,
+        customer_phone=body.customer_phone,
+        customer_email=body.customer_email or "",
+        shipping_address=body.shipping_address,
+        city=body.city,
+        province=body.province,
+        notes=body.notes,
+        items=items_json,
+        payment_method=pm,
+        payment_status=PaymentStatusEnum.pending,
+        subtotal=body.subtotal,
+        shipping_fee=body.shipping_fee,
+        payment_discount=body.payment_discount,
+        coupon_discount=0.0,
+        total=body.total,
+        status=OrderStatusEnum.pending,
+    )
+    db.add(order)
+    db.commit()
+    db.refresh(order)
+    return {"id": order.id, "order_number": order.order_number}
 
 
 @router.get("")

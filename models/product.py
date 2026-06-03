@@ -87,6 +87,7 @@ class ProductImage(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     variant_id = Column(Integer, ForeignKey("product_variants.id"), nullable=False, index=True)
+    color_name = Column(String(100), nullable=True)
     url = Column(String(512), nullable=False)
     public_id = Column(String(255), nullable=True)
     alt_text = Column(String(255), nullable=True)
