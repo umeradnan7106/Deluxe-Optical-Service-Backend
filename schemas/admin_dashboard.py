@@ -47,3 +47,11 @@ class LowStockItem(BaseModel):
     color_name: str
     stock: int
     low_stock_threshold: int
+
+
+class TopProduct(BaseModel):
+    product_id: int
+    product_name: str
+    units_sold: int
+    revenue: float
+    avg_rating: Optional[float] = None
